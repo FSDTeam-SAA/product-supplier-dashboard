@@ -1,7 +1,9 @@
+import OrderManagement from "./_components/OrderManagement";
+
 export default function Page() {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold capitalize">orders Page</h1>
+      <OrderManagement/>
     </div>
   );
 }

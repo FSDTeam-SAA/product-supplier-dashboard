@@ -1,7 +1,9 @@
+import ProductTable from "./_components/ProductTable";
+
 export default function Page() {
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold capitalize">products Page</h1>
+     <ProductTable/>
     </div>
   );
 }

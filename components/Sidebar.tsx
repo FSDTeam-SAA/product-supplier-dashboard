@@ -30,7 +30,7 @@ import { signOut } from "next-auth/react";
 import Image from "next/image";
 
 const supplierNavigation = [
-  { name: "Overview", href: "/supplier/overview", icon: LayoutGrid },
+  { name: "Overview", href: "/supplier", icon: LayoutGrid },
   { name: "Categories", href: "/supplier/categories", icon: FolderOpen },
   { name: "Products", href: "/supplier/products", icon: Package },
   { name: "Orders", href: "/supplier/orders", icon: History },
@@ -40,7 +40,7 @@ const supplierNavigation = [
 ];
 
 const serviceNavigation = [
-  { name: "Dashboard Overview", href: "/service/dashboard-overview", icon: LayoutGrid },
+  { name: "Dashboard Overview", href: "/servicedashboard-overview", icon: LayoutGrid },
   { name: "My Profile", href: "/service/my-profile", icon: User },
   { name: "My Services", href: "/service/my-services", icon: Briefcase },
   { name: "Enquiries", href: "/service/enquiries", icon: MessageSquare },
