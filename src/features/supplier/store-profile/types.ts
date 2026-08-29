@@ -1,13 +1,15 @@
 export interface StoreProfile {
-  storeName: string;
-  tagline: string;
+  name: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
+  storeName: string;
+  description: string;
+  websiteLink: string;
+  state: string;
+  postCode: string;
+  nantionality?: string;
   address: string;
-  city: string;
-  postcode: string;
   country: string;
-  about: string;
   logo?: string;
-  banner?: string;
+  coverPhoto?: string;
 }

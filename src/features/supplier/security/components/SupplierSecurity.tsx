@@ -1,137 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import { Shield, Key, Smartphone, Laptop } from "lucide-react";
+import { FormEvent, useState } from "react";
+import { Check, KeyRound, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { useChangeSupplierPassword } from "../hooks/useSupplierSecurity";
 
-export function SupplierSecurity() {
-  const [twoFactor, setTwoFactor] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState("");
+const inputClass = "mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-[#236B9E] focus:ring-2 focus:ring-[#236B9E]/15";
+
+export default function SupplierSecurity() {
+  const changePassword = useChangeSupplierPassword();
+  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
-  const handlePasswordChange = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      toast.error("New passwords do not match");
-      return;
-    }
-    toast.success("Password changed successfully");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmPassword("");
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (newPassword !== confirmPassword) return toast.error("New passwords do not match");
+    if (newPassword.length < 6) return toast.error("New password must be at least 6 characters");
+    await changePassword.mutateAsync({ oldPassword, newPassword });
+    setOldPassword(""); setNewPassword(""); setConfirmPassword("");
   };
-
-  return (
-    <div className="p-6 space-y-6 max-w-4xl">
-      <div>
-        <h2 className="text-xl font-bold text-[#2A6592]">Account Security</h2>
-        <p className="text-sm text-gray-500">Manage your credentials, 2-Factor authentication, and active sessions</p>
-      </div>
-
-      <Card className="border-gray-100 shadow-sm bg-white">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Key className="h-5 w-5 text-[#2A6592]" />
-            <CardTitle className="text-base font-semibold text-gray-800">Change Password</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-700">Current Password</Label>
-              <Input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                className="h-10"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-700">New Password</Label>
-              <Input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                className="h-10"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-700">Confirm New Password</Label>
-              <Input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="h-10"
-              />
-            </div>
-            <Button type="submit" className="bg-[#2A6592] hover:bg-[#204e71] text-white">
-              Update Password
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      <Card className="border-gray-100 shadow-sm bg-white">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-emerald-600" />
-            <CardTitle className="text-base font-semibold text-gray-800">Two-Factor Authentication (2FA)</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-800">Require 2FA verification on login</p>
-              <p className="text-xs text-gray-500">Adds an extra layer of security using an authenticator app</p>
-            </div>
-            <Switch checked={twoFactor} onCheckedChange={setTwoFactor} />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-gray-100 shadow-sm bg-white">
-        <CardHeader>
-          <CardTitle className="text-base font-semibold text-gray-800">Active Devices & Sessions</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex items-center gap-3">
-              <Laptop className="h-5 w-5 text-[#2A6592]" />
-              <div>
-                <p className="text-sm font-medium text-gray-800">Windows PC — Chrome Browser</p>
-                <p className="text-xs text-gray-500">Current Session • London, UK</p>
-              </div>
-            </div>
-            <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200" variant="outline">
-              Active Now
-            </Badge>
-          </div>
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex items-center gap-3">
-              <Smartphone className="h-5 w-5 text-gray-500" />
-              <div>
-                <p className="text-sm font-medium text-gray-800">iPhone 15 — Safari</p>
-                <p className="text-xs text-gray-500">Last active 2 hours ago • London, UK</p>
-              </div>
-            </div>
-            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 text-xs">
-              Revoke
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  return <div className="w-full space-y-6 p-6 lg:p-8"><div className="flex items-start gap-3"><span className="rounded-xl bg-[#236B9E]/10 p-3 text-[#236B9E]"><ShieldCheck className="h-6 w-6" /></span><div><h1 className="text-2xl font-bold text-slate-800">Account Security</h1><p className="mt-1 text-sm text-slate-500">Keep your supplier account secure by updating your password regularly.</p></div></div><section className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="flex items-center gap-3 border-b border-slate-100 px-6 py-5"><span className="rounded-lg bg-[#236B9E]/10 p-2 text-[#236B9E]"><KeyRound className="h-5 w-5" /></span><div><h2 className="font-semibold text-slate-800">Change password</h2><p className="mt-0.5 text-sm text-slate-500">Use a strong password with at least 6 characters.</p></div></div><form onSubmit={submit} className="grid gap-5 p-6 md:grid-cols-2 xl:grid-cols-3"><Field label="Current password"><input required type="password" value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} className={inputClass} autoComplete="current-password" /></Field><Field label="New password"><input required type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className={inputClass} autoComplete="new-password" /></Field><Field label="Confirm new password"><input required type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={inputClass} autoComplete="new-password" /></Field><div className="flex justify-end md:col-span-2 xl:col-span-3"><button disabled={changePassword.isPending} className="inline-flex items-center gap-2 rounded-lg bg-[#236B9E] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1D5A85] disabled:opacity-60">{changePassword.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}{changePassword.isPending ? "Updating…" : "Update password"}</button></div></form></section></div>;
 }
 
-export default SupplierSecurity;
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="block text-sm font-semibold text-slate-700">{label}{children}</label>; }

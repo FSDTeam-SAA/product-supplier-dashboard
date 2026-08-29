@@ -1,30 +1,32 @@
 import api from "@/lib/api";
-import { ProductCategory } from "../types";
+import { CategoryPayload, ProductCategory } from "../types";
 
 export const categoriesApi = {
-  async getCategories(): Promise<ProductCategory[]> {
-    const res = await api.get<{ success: boolean; data: ProductCategory[] }>("/supplier/categories");
+  async getCategories(supplierId: string): Promise<ProductCategory[]> {
+    const res = await api.get<{ success: boolean; data: ProductCategory[] }>(
+      `/product-categories/supplier/${supplierId}`,
+    );
     return res.data.data;
   },
 
-  async createCategory(category: Partial<ProductCategory>): Promise<ProductCategory> {
+  async createCategory(category: CategoryPayload): Promise<ProductCategory> {
     const res = await api.post<{ success: boolean; data: ProductCategory }>(
-      "/supplier/categories",
+      "/product-categories",
       category
     );
     return res.data.data;
   },
 
-  async updateCategory(id: string, category: Partial<ProductCategory>): Promise<ProductCategory> {
-    const res = await api.put<{ success: boolean; data: ProductCategory }>(
-      `/supplier/categories/${id}`,
+  async updateCategory(id: string, category: CategoryPayload): Promise<ProductCategory> {
+    const res = await api.patch<{ success: boolean; data: ProductCategory }>(
+      `/product-categories/${id}`,
       category
     );
     return res.data.data;
   },
 
   async deleteCategory(id: string): Promise<void> {
-    await api.delete(`/supplier/categories/${id}`);
+    await api.delete(`/product-categories/${id}`);
   },
 };
 

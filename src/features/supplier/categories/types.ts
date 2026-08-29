@@ -1,8 +1,15 @@
 export interface ProductCategory {
-  id: string;
-  name: string;
-  description: string;
-  productCount: number;
-  status: "Active" | "Inactive";
+  _id: string;
+  categoryName: string;
+  description?: string;
+  status: "active" | "deactivate";
   createdAt: string;
+  updatedAt: string;
+  supplierId: string;
+}
+
+export interface CategoryPayload {
+  categoryName: string;
+  description?: string;
+  status: ProductCategory["status"];
 }

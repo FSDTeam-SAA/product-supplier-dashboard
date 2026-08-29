@@ -1,148 +1,27 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Store, Upload, Check } from "lucide-react";
-import { toast } from "sonner";
+import { FormEvent, useEffect, useState } from "react";
+import { Check, Loader2, Store } from "lucide-react";
+import { useStoreProfile, useUpdateStoreProfile } from "../hooks/useStoreProfile";
+import { StoreProfile } from "../types";
 
-export function StoreProfilePage() {
-  const [storeName, setStoreName] = useState("Apex Healthcare Supplies Ltd");
-  const [tagline, setTagline] = useState("Premium Medical Equipment & Healthcare Solutions");
-  const [email, setEmail] = useState("sales@apexhealthcare.co.uk");
-  const [phone, setPhone] = useState("+44 20 7946 0912");
-  const [address, setAddress] = useState("12 Medical Park Way, Suite 4B");
-  const [city, setCity] = useState("London");
-  const [postcode, setPostcode] = useState("EC1A 1BB");
-  const [country, setCountry] = useState("United Kingdom");
-  const [about, setAbout] = useState(
-    "Apex Healthcare Supplies is a verified supplier of certified hospital beds, mobility aids, PPE, and specialist diagnostics to care homes and NHS providers across the UK."
-  );
+const emptyProfile: StoreProfile = { name: "", email: "", phoneNumber: "", storeName: "", description: "", websiteLink: "", state: "", country: "", address: "", postCode: "" };
+const inputClass = "mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-[#236B9E] focus:ring-2 focus:ring-[#236B9E]/15";
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Store profile updated successfully");
-  };
-
-  return (
-    <div className="p-6 space-y-6 max-w-4xl">
-      <div>
-        <h2 className="text-xl font-bold text-[#2A6592]">Store Profile</h2>
-        <p className="text-sm text-gray-500">Manage your public supplier store front, contact info, and branding</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Card className="border-gray-100 shadow-sm bg-white">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Store className="h-5 w-5 text-[#2A6592]" />
-              <CardTitle className="text-base font-semibold text-gray-800">Store Branding</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Store Name</Label>
-                <Input
-                  value={storeName}
-                  onChange={(e) => setStoreName(e.target.value)}
-                  required
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Tagline / Slogan</Label>
-                <Input
-                  value={tagline}
-                  onChange={(e) => setTagline(e.target.value)}
-                  className="h-10"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-700">About Store / Business Bio</Label>
-              <Textarea
-                rows={4}
-                value={about}
-                onChange={(e) => setAbout(e.target.value)}
-                className="resize-none"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-gray-100 shadow-sm bg-white">
-          <CardHeader>
-            <CardTitle className="text-base font-semibold text-gray-800">Contact & Address</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Business Email</Label>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Phone Number</Label>
-                <Input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  required
-                  className="h-10"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-semibold text-gray-700">Street Address</Label>
-              <Input
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                className="h-10"
-              />
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">City</Label>
-                <Input value={city} onChange={(e) => setCity(e.target.value)} className="h-10" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Postcode / ZIP</Label>
-                <Input
-                  value={postcode}
-                  onChange={(e) => setPostcode(e.target.value)}
-                  className="h-10"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-semibold text-gray-700">Country</Label>
-                <Input
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="h-10"
-                />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Button type="submit" className="bg-[#2A6592] hover:bg-[#204e71] text-white flex items-center gap-2">
-          <Check className="h-4 w-4" />
-          Save Changes
-        </Button>
-      </form>
-    </div>
-  );
+export default function StoreProfilePage() {
+  const profileQuery = useStoreProfile();
+  const updateProfile = useUpdateStoreProfile();
+  const [profile, setProfile] = useState<StoreProfile>(emptyProfile);
+  useEffect(() => {
+    if (!profileQuery.data) return;
+    const syncProfile = window.setTimeout(() => setProfile({ ...emptyProfile, ...profileQuery.data }), 0);
+    return () => window.clearTimeout(syncProfile);
+  }, [profileQuery.data]);
+  const submit = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); await updateProfile.mutateAsync(profile); };
+  if (profileQuery.isLoading) return <div className="flex min-h-64 items-center justify-center text-slate-500"><Loader2 className="mr-2 h-5 w-5 animate-spin" />Loading store profile…</div>;
+  if (profileQuery.isError) return <div className="rounded-xl border border-red-100 bg-red-50 p-5 text-sm text-red-700">Could not load store profile. <button onClick={() => profileQuery.refetch()} className="font-semibold underline">Try again</button></div>;
+  const change = (key: keyof StoreProfile, value: string) => setProfile((current) => ({ ...current, [key]: value }));
+  return <div className="w-full space-y-6 p-6 lg:p-8"><div className="flex items-start gap-3"><span className="rounded-xl bg-[#236B9E]/10 p-3 text-[#236B9E]"><Store className="h-6 w-6" /></span><div><h1 className="text-2xl font-bold text-slate-800">Store Profile</h1><p className="mt-1 text-sm text-slate-500">Manage your supplier store details, contact information, and public description.</p></div></div><form onSubmit={submit} className="space-y-6"><section className="rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="border-b border-slate-100 px-6 py-5"><h2 className="font-semibold text-slate-800">Store details</h2><p className="mt-1 text-sm text-slate-500">Information shown with your supplier store.</p></div><div className="grid gap-5 p-6 md:grid-cols-2 xl:grid-cols-3"><Field label="Store name"><input required value={profile.storeName} onChange={(e) => change("storeName", e.target.value)} className={inputClass} /></Field><Field label="Contact person"><input required value={profile.name} onChange={(e) => change("name", e.target.value)} className={inputClass} /></Field><Field label="Website"><input type="url" value={profile.websiteLink} onChange={(e) => change("websiteLink", e.target.value)} className={inputClass} placeholder="https://example.com" /></Field><Field label="About store" wide><textarea required rows={5} value={profile.description} onChange={(e) => change("description", e.target.value)} className={inputClass} /></Field></div></section><section className="rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="border-b border-slate-100 px-6 py-5"><h2 className="font-semibold text-slate-800">Contact & location</h2><p className="mt-1 text-sm text-slate-500">Keep these details current for customers.</p></div><div className="grid gap-5 p-6 md:grid-cols-2 xl:grid-cols-3"><Field label="Business email"><input required type="email" value={profile.email} onChange={(e) => change("email", e.target.value)} className={inputClass} /></Field><Field label="Phone number"><input required value={profile.phoneNumber} onChange={(e) => change("phoneNumber", e.target.value)} className={inputClass} /></Field><Field label="Country"><input required value={profile.country} onChange={(e) => change("country", e.target.value)} className={inputClass} /></Field><Field label="Address" wide><input required value={profile.address} onChange={(e) => change("address", e.target.value)} className={inputClass} /></Field><Field label="State / region"><input required value={profile.state} onChange={(e) => change("state", e.target.value)} className={inputClass} /></Field><Field label="Postcode"><input required value={profile.postCode} onChange={(e) => change("postCode", e.target.value)} className={inputClass} /></Field></div></section><div className="flex justify-end"><button disabled={updateProfile.isPending} className="inline-flex items-center gap-2 rounded-lg bg-[#236B9E] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1D5A85] disabled:opacity-60">{updateProfile.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}{updateProfile.isPending ? "Saving…" : "Save changes"}</button></div></form></div>;
 }
 
-export default StoreProfilePage;
+function Field({ label, wide, children }: { label: string; wide?: boolean; children: React.ReactNode }) { return <label className={`block text-sm font-semibold text-slate-700 ${wide ? "md:col-span-2 xl:col-span-3" : ""}`}>{label}{children}</label>; }
