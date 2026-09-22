@@ -68,7 +68,7 @@ export default function LoginPage() {
       <div
         className="absolute inset-0 z-0 opacity-[0.03]"
         style={{
-          backgroundImage: "url('/logo.svg')",
+          backgroundImage: "url('/logo.png')",
           backgroundSize: "300px",
           backgroundRepeat: "repeat",
           backgroundPosition: "center",
