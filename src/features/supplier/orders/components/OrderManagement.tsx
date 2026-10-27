@@ -333,7 +333,7 @@ export default function OrderManagement() {
                   className="px-5 py-2 bg-[#236B9E] hover:bg-[#1D5A85] text-white rounded-lg text-xs font-semibold transition-colors"
                 >
                   Close
-                </button>
+                </button>          
               </div>
             </div>
           </div>
